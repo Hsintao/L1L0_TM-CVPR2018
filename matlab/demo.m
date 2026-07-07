@@ -1,11 +1,18 @@
 clear;clc;
+script_dir = fileparts(mfilename('fullpath'));
+if isempty(script_dir)
+    script_dir = pwd;
+end
+addpath(script_dir);
+
 %% Parameters
 lambda1 = 0.3;  
 lambda2 = lambda1*0.01;
 lambda3 = 0.1;
 
 %% read files
-hdr = hdrimread('1.hdr');
+input_path = fullfile(script_dir,'..','inputs','1.hdr');
+hdr = hdrimread(input_path);
 [hei,wid,channel] = size(hdr);
 
 tic;
@@ -31,8 +38,12 @@ hdr_lnn = nor(clampp(hdr_lnn,0.005,0.995));
 out_rgb = hsv2rgb((cat(3,hdr_h(:,:,1),hdr_h(:,:,2)*0.6,hdr_lnn)));
 toc;
 
+output_dir = fullfile(script_dir,'..','results');
+if ~exist(output_dir,'dir')
+    mkdir(output_dir);
+end
+imwrite(out_rgb, fullfile(output_dir,'demo_matlab.png'));
 figure,imshow(out_rgb)
-
 
 
 
